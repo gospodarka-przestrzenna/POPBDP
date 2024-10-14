@@ -1,0 +1,247 @@
+# QuickBDL translation to Polish
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-04 14:01+0100\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: columnname_form.py:43
+msgid "Choose Column Name"
+msgstr "Wybierz nazwę kolumny"
+
+#: columnname_form.py:46
+#, python-brace-format
+msgid "Choose a column name for the variable (up to {length} characters):"
+msgstr "Wybierz nazwę kolumny dla tej zmiennej (do {length} znaków):"
+
+#: columnname_form.py:58
+msgid "Confirm"
+msgstr "Potwierdź"
+
+#: columnname_form.py:118 columnname_form.py:132
+#, python-brace-format
+msgid "No name found for variable ID: {id}"
+msgstr "Nie znaleziono nazwy dla zmiennej ID: {id}"
+
+#: units_form.py:46 subjects_form.py:50
+msgid "Name"
+msgstr "Nazwa"
+
+#: units_form.py:46
+msgid "Type"
+msgstr "Typ"
+
+#: units_form.py:46
+msgid "Short code"
+msgstr "Skrócony kod"
+
+#: units_form.py:46
+msgid "Full code"
+msgstr "Pełny kod"
+
+#: units_form.py:61 datafetch_form.py:105 subjects_form.py:65
+#: approach_form.py:57
+msgid "Next"
+msgstr "Dalej"
+
+#: units_form.py:71
+msgid "Choose territorial units"
+msgstr "Wybierz jednostki terytorialne pobieranych danych"
+
+#: units_form.py:102 utils/teryt.py:128
+msgid "Voivodeship"
+msgstr "Województwo"
+
+#: units_form.py:119 utils/teryt.py:130
+msgid "Subregion"
+msgstr "Podregion"
+
+#: units_form.py:129 units_form.py:144 units_form.py:185 subjects_form.py:104
+#: subjects_form.py:117 subjects_form.py:147
+msgid "Loading..."
+msgstr "Ładowanie..."
+
+#: datafetch_form.py:40
+msgid "Data Fetching"
+msgstr "Pobieranie danych"
+
+#: datafetch_form.py:48
+msgid "Initializing data fetching..."
+msgstr "Inicjalizacja pobierania danych..."
+
+#: datafetch_form.py:52
+msgid "Finish"
+msgstr "Zakończ"
+
+#: datafetch_form.py:93
+#, python-format, python-brace-format
+msgid "Fetching data: {value}% complete. (unit: {unit}, variable: {variable})"
+msgstr "Pobieranie danych: {value}%. (jednostka: {unit}, zmienna: {variable})"
+
+#: datafetch_form.py:103
+msgid "Data fetching completed successfully."
+msgstr "Pobieranie danych zakończone pomyślnie."
+
+#: datafetch_form.py:115
+#, python-brace-format
+msgid "Error: {message}"
+msgstr "Błąd: {message}"
+
+#: datafetch_form.py:118 initialization_form.py:110
+msgid "Close"
+msgstr "Zamknij"
+
+#: initialization_form.py:61
+msgid "Initializing Plugin"
+msgstr "Inicjalizacja wtyczki"
+
+#: initialization_form.py:65
+msgid "Checking database file..."
+msgstr "Sprawdzanie pliku bazy danych..."
+
+#: initialization_form.py:73
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: initialization_form.py:98
+#, python-brace-format
+msgid "Downloading database file: {progress}%"
+msgstr "Pobieranie pliku bazy danych: {progress}%"
+
+#: initialization_form.py:104
+msgid "Database file downloaded successfully."
+msgstr "Pobieranie danych zakończone pomyślnie."
+
+#: initialization_form.py:109
+#, python-brace-format
+msgid "Download failed: {error}"
+msgstr "Błąd pobierania: {error}"
+
+#: utils/teryt.py:132
+msgid "County"
+msgstr "Powiat"
+
+#: utils/teryt.py:135
+msgid "City"
+msgstr "Miasto"
+
+#: utils/teryt.py:136
+msgid "Rural commune"
+msgstr "Gmina wiejska"
+
+#: utils/teryt.py:137
+msgid "Urban-rural commune"
+msgstr "Gmina miejsko-wiejska"
+
+#: utils/teryt.py:138
+msgid "City in urban-rural commune"
+msgstr "Miasto w gminie miejsko-wiejskiej"
+
+#: utils/teryt.py:139
+msgid "Rural area in urban-rural commune"
+msgstr "Wiejski obszar w gminie miejsko-wiejskiej"
+
+#: utils/teryt.py:140
+msgid "City district"
+msgstr "Dzielnica miasta"
+
+#: utils/teryt.py:141 utils/teryt.py:142
+msgid "Unknown type"
+msgstr "Nieznany typ"
+
+#: years_form.py:36
+msgid "Select Years"
+msgstr "Wybierz lata"
+
+#: years_form.py:43
+msgid "Add Layer to Map"
+msgstr "Dodaj warstwę do mapy"
+
+#: get_data.py:38
+msgid "Fetch GUS data"
+msgstr "Pobierz dane GUS"
+
+#: subjects_form.py:43
+msgid "Select Subjects and Variables"
+msgstr "Wybierz tematy i zmienne do pobrania"
+
+#: subjects_form.py:50
+msgid "Description"
+msgstr "Opis / jednostka"
+
+#: subjects_form.py:50
+msgid "Subject ID"
+msgstr "Identyfikator tematu"
+
+#: subjects_form.py:98
+msgid "Main subject"
+msgstr "Temat"
+
+#: subjects_form.py:141
+msgid "Subtopic"
+msgstr "Podtemat"
+
+#: create_layer.py:49
+msgid "short_code"
+msgstr "Skrócony kod"
+
+#: create_layer.py:50
+msgid "type"
+msgstr "Typ"
+
+#: create_layer.py:51
+msgid "name"
+msgstr "Nazwa"
+
+#: create_layer.py:148
+#, python-brace-format
+msgid "Name not found for code: {short_code} {type}"
+msgstr "Nie znaleziono nazwy dla kodu: {short_code} {type}"
+
+#: datafetch_worker.py:45
+msgid "GUS data layer"
+msgstr "Dane GUS"
+
+#: datafetch_worker.py:73
+msgid "Error while fetching data. D1"
+msgstr "Błąd podczas pobierania danych. D1"
+
+#: datafetch_worker.py:100
+msgid "No available tokens. D2"
+msgstr "Brak dostępnych tokenów. D2"
+
+#: approach_form.py:36
+msgid "Choose data granularity"
+msgstr "Wybierz granulację geometrii"
+
+#: approach_form.py:40
+msgid "Choose one of the following options to proceed:"
+msgstr "Wybierz jedną z poniższych opcji, aby kontynuować:"
+
+#: approach_form.py:45
+msgid ""
+"I am interested in data for the smallest division (In the finest division "
+"there are rural and urban areas)"
+msgstr ""
+"Interesują mnie dane dla drobnego podziału (W najdrobniejszym podziale są "
+"obszary wiejskie i miasta)"
+
+#: approach_form.py:49
+msgid ""
+"I am interested in historical data (In the finest division there are rural-"
+"urban communes)"
+msgstr ""
+"Interesują mnie dane historyczne (W najdrobniejszym podziale są gminy "
+"wiejsko-miejskie)"
+
+#, python-brace-format
+#~ msgid "Geometry not found for code: {short_code} {gus_type}"
+#~ msgstr "Nie znaleziono geometrii dla kodu: {short_code} {gus_type}"

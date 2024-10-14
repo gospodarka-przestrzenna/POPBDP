@@ -1,0 +1,247 @@
+# QuickBDL translation to Polish
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-04 14:01+0100\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: columnname_form.py:43
+msgid "Choose Column Name"
+msgstr "Choose column name"
+
+#: columnname_form.py:46
+#, python-brace-format
+msgid "Choose a column name for the variable (up to {length} characters):"
+msgstr "Choose a column name for the variable (up to {length} characters)."
+
+#: columnname_form.py:58
+msgid "Confirm"
+msgstr "Confirm"
+
+#: columnname_form.py:118 columnname_form.py:132
+#, python-brace-format
+msgid "No name found for variable ID: {id}"
+msgstr "No name found for variable ID: {id}"
+
+#: units_form.py:46 subjects_form.py:50
+msgid "Name"
+msgstr "Name"
+
+#: units_form.py:46
+msgid "Type"
+msgstr "Type"
+
+#: units_form.py:46
+msgid "Short code"
+msgstr "Short code"
+
+#: units_form.py:46
+msgid "Full code"
+msgstr "Full code"
+
+#: units_form.py:61 datafetch_form.py:105 subjects_form.py:65
+#: approach_form.py:57
+msgid "Next"
+msgstr "Next"
+
+#: units_form.py:71
+msgid "Choose territorial units"
+msgstr "Choose territorial units"
+
+#: units_form.py:102 utils/teryt.py:128
+msgid "Voivodeship"
+msgstr "Voivodeship"
+
+#: units_form.py:119 utils/teryt.py:130
+msgid "Subregion"
+msgstr "Subregion"
+
+#: units_form.py:129 units_form.py:144 units_form.py:185 subjects_form.py:104
+#: subjects_form.py:117 subjects_form.py:147
+msgid "Loading..."
+msgstr "Loading..."
+
+#: datafetch_form.py:40
+msgid "Data Fetching"
+msgstr "Data fetching"
+
+#: datafetch_form.py:48
+msgid "Initializing data fetching..."
+msgstr "Data fetching initialization..."
+
+#: datafetch_form.py:52
+msgid "Finish"
+msgstr "Finish"
+
+#: datafetch_form.py:93
+#, python-format, python-brace-format
+msgid "Fetching data: {value}% complete. (unit: {unit}, variable: {variable})"
+msgstr "Fetching data: {value}% complete. (unit: {unit}, variable: {variable})"
+
+#: datafetch_form.py:103
+msgid "Data fetching completed successfully."
+msgstr "Data fetching completed successfully."
+
+#: datafetch_form.py:115
+#, python-brace-format
+msgid "Error: {message}"
+msgstr "Error: {message}"
+
+#: datafetch_form.py:118 initialization_form.py:110
+msgid "Close"
+msgstr "Close"
+
+#: initialization_form.py:61
+msgid "Initializing Plugin"
+msgstr "Initializing Plugin"
+
+#: initialization_form.py:65
+msgid "Checking database file..."
+msgstr "Checking database file..."
+
+#: initialization_form.py:73
+msgid "Cancel"
+msgstr "Cancel"
+
+#: initialization_form.py:98
+#, python-brace-format
+msgid "Downloading database file: {progress}%"
+msgstr "Downloading database file: {progress}%"
+
+#: initialization_form.py:104
+msgid "Database file downloaded successfully."
+msgstr "Database file downloaded successfully."
+
+#: initialization_form.py:109
+#, python-brace-format
+msgid "Download failed: {error}"
+msgstr "Download failed: {error}"
+
+#: utils/teryt.py:132
+msgid "County"
+msgstr "County"
+
+#: utils/teryt.py:135
+msgid "City"
+msgstr "City"
+
+#: utils/teryt.py:136
+msgid "Rural commune"
+msgstr "Rural commune"
+
+#: utils/teryt.py:137
+msgid "Urban-rural commune"
+msgstr "Urban-rural commune"
+
+#: utils/teryt.py:138
+msgid "City in urban-rural commune"
+msgstr "City in urban-rural commune"
+
+#: utils/teryt.py:139
+msgid "Rural area in urban-rural commune"
+msgstr "Rural area in urban-rural commune"
+
+#: utils/teryt.py:140
+msgid "City district"
+msgstr "City district"
+
+#: utils/teryt.py:141 utils/teryt.py:142
+msgid "Unknown type"
+msgstr "Unknown type"
+
+#: years_form.py:36
+msgid "Select Years"
+msgstr "Select years to add"
+
+#: years_form.py:43
+msgid "Add Layer to Map"
+msgstr "Add layer to map"
+
+#: get_data.py:38
+msgid "Fetch GUS data"
+msgstr "Fetch GUS data"
+
+#: subjects_form.py:43
+msgid "Select Subjects and Variables"
+msgstr "Select subjects and variables to download"
+
+#: subjects_form.py:50
+msgid "Description"
+msgstr "Description / variable unit"
+
+#: subjects_form.py:50
+msgid "Subject ID"
+msgstr "Subject ID"
+
+#: subjects_form.py:98
+msgid "Main subject"
+msgstr "Main subject"
+
+#: subjects_form.py:141
+msgid "Subtopic"
+msgstr "Subtopic"
+
+#: create_layer.py:49
+msgid "short_code"
+msgstr "Short code"
+
+#: create_layer.py:50
+msgid "type"
+msgstr "Type"
+
+#: create_layer.py:51
+msgid "name"
+msgstr "Name"
+
+#: create_layer.py:148
+#, python-brace-format
+msgid "Name not found for code: {short_code} {type}"
+msgstr "Name not found for code: {short_code} {type}"
+
+#: datafetch_worker.py:45
+msgid "GUS data layer"
+msgstr "GUS data"
+
+#: datafetch_worker.py:73
+msgid "Error while fetching data. D1"
+msgstr "Error while fetching data. D1"
+
+#: datafetch_worker.py:100
+msgid "No available tokens. D2"
+msgstr "No available tokens. Wait for a while D2"
+
+#: approach_form.py:36
+msgid "Choose data granularity"
+msgstr "Choose geometry granularity"
+
+#: approach_form.py:40
+msgid "Choose one of the following options to proceed:"
+msgstr "Choose one of the following options to proceed:"
+
+#: approach_form.py:45
+msgid ""
+"I am interested in data for the smallest division (In the finest division "
+"there are rural and urban areas)"
+msgstr ""
+"I am interested in data for the smallest division (In the finest division "
+"there are rural and urban areas)"
+
+#: approach_form.py:49
+msgid ""
+"I am interested in historical data (In the finest division there are rural-"
+"urban communes)"
+msgstr ""
+"I am interested in historical data (In the finest division there are rural-"
+"urban communes)"
+
+#, python-brace-format
+#~ msgid "Geometry not found for code: {short_code} {gus_type}"
+#~ msgstr "Geometry not found for code: {short_code} {gus_type}"

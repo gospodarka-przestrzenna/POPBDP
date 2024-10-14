@@ -1,0 +1,23 @@
+[general]
+name=Quick BDL
+description=Pobieranie obiektów GUS/BDL (EN: Downloading objects from the Central Statistical Office of Poland / Local Data Bank)
+about= <ul> <li> <b>PL:</b> Ta wtyczka umożliwia pobieranie danych z GUS (Głównego Urzędu Statystycznego) w celu analizy i wizualizacji w środowisku QGIS. Użytkownik może wybrać interesujące go obszary terytorialne, wskaźniki statystyczne oraz zakres lat, dla których dane mają zostać pobrane. W rezultacie tworzona jest warstwa wektorowa, w której każda jednostka terytorialna jest reprezentowana jako geometria, a wybrane wskaźniki są przypisane jako atrybuty w kolumnach. Dzięki temu dane statystyczne można łatwo przetwarzać, analizować i prezentować w kontekście przestrzennym. Wtyczka wspiera integrację z serwisem API GUS oraz zapewnia dynamiczne tworzenie warstw na podstawie wybranych kryteriów. Jest to narzędzie przydatne zarówno dla analityków, jak i instytucji badawczych, które potrzebują łatwego dostępu do danych statystycznych w kontekście geograficznym.
+</li><li> <b>EN:</b> This plugin enables the retrieval of data from GUS (Central Statistical Office of Poland / Local Data Bank) for analysis and visualization within the QGIS environment. Users can select specific territorial areas, statistical indicators (PL described), and time ranges for which data should be fetched. As a result, a vector layer is created, where each territorial unit is represented as geometry, and the selected indicators are assigned as attributes in columns. This allows statistical data to be easily processed, analyzed, and presented in a spatial context. The plugin supports integration with the GUS API and provides dynamic layer creation based on user-selected criteria. It is a useful tool for analysts and research institutions that require seamless access to statistical data within a geographic context. </li> </ul
+version=1.0.0
+qgisMinimumVersion=3.10
+icon=images/ico1.png
+author=Wawrzyniec Zipser, Maciej Kamiński Politechnika Wrocławska
+email=maciej.kaminski@pwr.edu.pl
+license=MPL-2.0
+tags=downloader, public, Poland, GUS, BDL, data
+homepage=https://github.com/gospodarka-przestrzenna/QuickBDL
+tracker=https://github.com/gospodarka-przestrzenna/QuickBDL/issues
+repository=https://github.com/gospodarka-przestrzenna/QuickBDL
+experimental=False
+deprecated=False
+changelog=Version 1.0.0
+        - Initial release
+        - Added support for downloading data from GUS
+        - Added support for historical data
+        - Added approach to download data for fine division
+        - Added database with territorial units geometry
