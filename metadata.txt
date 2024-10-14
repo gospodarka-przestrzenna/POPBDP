@@ -1,0 +1,24 @@
+[general]
+name=POPBDP
+description=Pobieranie obiektów polskiej bazy danych publicznych
+about= Pobieranie obiektów polskiej bazy danych publicznych
+        i wyświetlanie ich w QGIS jako warstwę z odpowiadającymi atrybutami.
+        EN:
+        This plugin allows to download data from Polish public databases 
+        and display them in QGIS as a layer with coresponing attributes.
+version=1.0.0
+qgisMinimumVersion=3.10
+icon=images/ico1.png
+author=Wawrzyniec Zipser, Maciej Kamiński Politechnika Wrocławska
+email=maciej.kaminski@pwr.edu.pl
+tags=todo
+homepage=https://github.com/gospodarka-przestrzenna/POPBDP
+tracker=https://github.com/gospodarka-przestrzenna/POPBDP/issues
+repository=https://github.com/gospodarka-przestrzenna/POPBDP
+experimental=False
+deprecated=False
+changelog=Version 1.0.0
+        - Initial release
+        - Added support for downloading data from GUS
+        - Added support for historical data
+        - Added approach to download data for 

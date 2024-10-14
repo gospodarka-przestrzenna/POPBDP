@@ -1,0 +1,260 @@
+# -*- coding: utf-8 -*-
+###############################################################################
+#
+# Copyright (C) 2018 Wawrzyniec Zipser, Maciej Kamiński (maciej.kaminski@pwr.edu.pl) Politechnika Wrocławska
+#
+# This source is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This code is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+###############################################################################
+
+import sqlite3
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QTreeView, QVBoxLayout, QPushButton, QHeaderView, QDialog
+from PyQt5.QtCore import Qt
+from .config import DB_PATH
+from .translations import _
+
+
+class UnitsForm(QDialog):
+    """
+    UnitsForm class provides a tree view for selecting territorial units
+    with hierarchical structure and checkboxes.
+    """
+
+    def __init__(self, do_merge=False):
+        """
+        Initializes the UnitsForm dialog.
+        
+        Args:
+            do_merge (bool): If True, smallest units like rural/urban communes will be merged.
+        """
+        super().__init__()
+
+        self.do_merge = do_merge  # Merge flag for handling smallest units
+        self.selected_codes = []  # List to store selected codes
+
+        # Tree view to display territorial units
+        self.tree_view = QTreeView()
+        
+        # Model for the tree view
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels([_("Name"), _("Type"), _("Short code"), _("Full code")])
+        self.tree_view.setModel(self.model)
+
+        # Set column widths and resizing behavior
+        self.tree_view.setColumnWidth(0, 250)
+        self.tree_view.setColumnWidth(1, 150)
+        self.tree_view.setColumnWidth(2, 100)
+        self.tree_view.setColumnWidth(3, 150)
+        self.tree_view.header().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tree_view.header().setSectionResizeMode(1, QHeaderView.Fixed)
+        self.tree_view.header().setSectionResizeMode(2, QHeaderView.Fixed)
+        self.tree_view.header().setSectionResizeMode(3, QHeaderView.Fixed)
+        self.tree_view.header().setStretchLastSection(False)
+
+        # "Next" button to proceed to the next step
+        self.button = QPushButton(_("Next"))
+        self.button.clicked.connect(self.accept)
+        self.button.setEnabled(False)  # Initially disabled until units are selected
+        
+        # Main layout setup
+        layout = QVBoxLayout()
+        layout.addWidget(self.tree_view)
+        layout.addWidget(self.button)
+        self.setLayout(layout)
+
+        self.setWindowTitle(_("Choose territorial units"))
+        self.resize(800, 500)
+
+        # Signals to handle interactions
+        self.tree_view.expanded.connect(self.on_item_expanded)  # Load children when a parent is expanded
+        self.model.itemChanged.connect(self.on_item_changed)   # Handle checkbox state changes
+
+        # Load root data (voivodeships and subregions)
+        self.load_root_data()
+
+    def load_root_data(self):
+        """
+        Loads voivodeships (level 2) and their subregions (level 4) into the tree view.
+        """
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            
+            # Fetch voivodeships (level 2)
+            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE level = 2")
+            regions = cursor.fetchall()
+
+            # Fetch subregions (level 4)
+            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE level = 4")
+            subregions = cursor.fetchall()
+
+            for full_code, short_code, name, kind, level in regions:
+                # Create voivodeship items
+                region_item = QStandardItem(name)
+                region_item.setData(full_code)
+                region_item.setFlags(region_item.flags() & ~Qt.ItemIsEditable)
+
+                type_item = QStandardItem(_("Voivodeship"))
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+
+                short_code_item = QStandardItem(short_code)
+                short_code_item.setFlags(short_code_item.flags() & ~Qt.ItemIsEditable)
+
+                full_code_item = QStandardItem(full_code)
+                full_code_item.setFlags(full_code_item.flags() & ~Qt.ItemIsEditable)
+
+                # Add subregions for the voivodeship
+                for sub_full_code, sub_short_code, sub_name, sub_kind, sub_level in subregions:
+                    if sub_full_code.startswith(full_code[:4]):
+                        subregion_item = QStandardItem(sub_name)
+                        subregion_item.setData(sub_full_code)
+                        subregion_item.setFlags(subregion_item.flags() & ~Qt.ItemIsEditable)
+                        subregion_item.setCheckable(True)  # Checkbox for subregions
+
+                        sub_type_item = QStandardItem(_("Subregion"))
+                        sub_type_item.setFlags(sub_type_item.flags() & ~Qt.ItemIsEditable)
+
+                        sub_short_code_item = QStandardItem(sub_short_code)
+                        sub_short_code_item.setFlags(sub_short_code_item.flags() & ~Qt.ItemIsEditable)
+
+                        sub_full_code_item = QStandardItem(sub_full_code)
+                        sub_full_code_item.setFlags(sub_full_code_item.flags() & ~Qt.ItemIsEditable)
+
+                        # Add dummy item for further expansion
+                        subregion_item.appendRow([QStandardItem(_("Loading...")), QStandardItem(""), QStandardItem(""), QStandardItem("")])
+
+                        region_item.appendRow([subregion_item, sub_type_item, sub_short_code_item, sub_full_code_item])
+
+                # Add voivodeship to the model
+                self.model.appendRow([region_item, type_item, short_code_item, full_code_item])
+
+    def on_item_expanded(self, index):
+        """
+        Loads children of an expanded item (counties and communes).
+        
+        Args:
+            index (QModelIndex): Index of the expanded item in the tree view.
+        """
+        item = self.model.itemFromIndex(index)
+        if item.hasChildren() and item.child(0).text() == _("Loading..."):
+            item.removeRow(0)  # Remove dummy item
+            parent_code = item.data()
+            self.load_children(item, parent_code)
+
+    def load_children(self, parent_item, parent_code):
+        """
+        Loads children of a given parent item (counties and communes).
+        
+        Args:
+            parent_item (QStandardItem): The parent item in the tree view.
+            parent_code (str): The full code of the parent item.
+        """
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE parent_code = ?", (parent_code,))
+            children = cursor.fetchall()
+            
+            for full_code, short_code, name, kind, level in children:
+                type_name = self.get_type_name(level, kind)
+
+                child_item = QStandardItem(name)
+                child_item.setData(full_code)
+                child_item.setFlags(child_item.flags() & ~Qt.ItemIsEditable)
+                if level == 5 or level == 6:
+                    child_item.setCheckable(True)
+
+                type_item = QStandardItem(type_name)
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+
+                short_code_item = QStandardItem(short_code)
+                short_code_item.setFlags(short_code_item.flags() & ~Qt.ItemIsEditable)
+
+                full_code_item = QStandardItem(full_code)
+                full_code_item.setFlags(full_code_item.flags() & ~Qt.ItemIsEditable)
+
+                # Add dummy item for further expansion (communes)
+                if level == 5 or (level == 6 and kind == '3' and not self.do_merge):
+                    child_item.appendRow([QStandardItem(_("Loading...")), QStandardItem(""), QStandardItem(""), QStandardItem("")])
+
+                parent_item.appendRow([child_item, type_item, short_code_item, full_code_item])
+
+    def get_type_name(self, level, kind):
+        """
+        Returns a human-readable type name based on the level and kind.
+        """
+        if level == 2:
+            return _("Voivodeship")
+        elif level == 4:
+            return _("Subregion")
+        elif level == 5:
+            return _("County")
+        elif level == 6:
+            return {
+                '1': _("City"),
+                '2': _("Rural commune"),
+                '3': _("Urban-rural commune"),
+                '4': _("City in urban-rural commune"),
+                '5': _("Rural area in urban-rural commune")
+            }.get(kind, _("Unknown type"))
+        return _("Unknown type")
+
+    def on_item_changed(self, item: QStandardItem):
+        """
+        Updates the selected codes list when a checkbox state changes.
+        
+        Args:
+            item (QStandardItem): The item whose checkbox state changed.
+        """
+        def check_children(item):
+            for row in range(item.rowCount()):
+                child = item.child(row)
+                if child.isCheckable():
+                    if item.checkState() == Qt.Checked:
+                        if child.data() in self.selected_codes:
+                            self.selected_codes.remove(child.data())
+                    child.setFlags(child.flags() & ~Qt.ItemIsEnabled)
+                    child.setCheckState(Qt.Checked)
+                    check_children(child)
+
+        def uncheck_children(item):
+            for row in range(item.rowCount()):
+                child = item.child(row)
+                if child.isCheckable():
+                    if item.checkState() == Qt.Unchecked:
+                        if child.data() in self.selected_codes:
+                            self.selected_codes.remove(child.data())
+                    child.setCheckState(Qt.Unchecked)
+                    child.setFlags(child.flags() | Qt.ItemIsEnabled)
+                    uncheck_children(child)
+
+        if item.isCheckable() and item.isEnabled():
+            code = item.data()
+            if item.checkState() == Qt.Checked:
+                check_children(item)
+                if code not in self.selected_codes:
+                    self.selected_codes.append(code)
+            else:
+                uncheck_children(item)
+                if code in self.selected_codes:
+                    self.selected_codes.remove(code)
+
+        self.button.setEnabled(len(self.selected_codes) > 0)
+
+    def closeEvent(self, event):
+        """
+        Handles the dialog close event.
+        """
+        event.accept()
+        self.reject()

@@ -1,0 +1,196 @@
+# -*- coding: utf-8 -*-
+###############################################################################
+#
+# Copyright (C) 2018 Wawrzyniec Zipser, Maciej Kamiński (maciej.kaminski@pwr.edu.pl) Politechnika Wrocławska
+#
+# This source is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This code is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+###############################################################################
+
+import sqlite3
+from PyQt5.QtCore import Qt, pyqtSignal, QThread
+from .create_layer import Layer
+from .translations import _
+from .config import DB_PATH
+import requests
+import time
+import random
+
+class DataFetchWorker(QThread):
+    """
+    Worker thread for fetching data from the API. Handles progress updates, error handling,
+    and data processing, while emitting relevant signals.
+    """
+    progress_updated = pyqtSignal(int, str, str)  # Signal for progress updates (progress, unit, variable)
+    data_fetched = pyqtSignal()  # Signal emitted after data fetching is complete
+    error_occurred = pyqtSignal(str)  # Signal emitted when an error occurs
+
+    def __init__(self, do_merge, units, variables, variables_names):
+        """
+        Initialize the worker.
+
+        Args:
+            do_merge (bool): Whether to merge rural and urban areas into a single unit.
+            units (list): List of unit codes to fetch data for.
+            variables (list): List of variable IDs to fetch data for.
+            variables_names (dict): Mapping of variable IDs to their user-defined column names.
+        """
+        super().__init__()
+        
+        # Create a new layer to store fetched data
+        self.layer = Layer(_("GUS data layer"))
+
+        self.do_merge = do_merge
+        self.units = units
+        self.variables = variables
+        self.variables_names = variables_names
+
+        # Assign the geometry getter based on the `do_merge` flag
+        self.gmina_geometry_getter = (
+            self.layer.get_gmina_geometry_merged if do_merge else self.layer.get_gmina_geometry_splitted
+        )
+
+    def run(self):
+        """
+        Main execution function for the worker thread. Handles data fetching and
+        updates the progress accordingly.
+        """
+        total_requests = 2 * len(self.units) * len(self.variables)
+        completed_requests = 0
+        
+        for variable in self.variables:
+            for unit in self.units:
+                # Update progress before each request
+                completed_requests += 1
+                progress = int((completed_requests / total_requests) * 100)
+                self.progress_updated.emit(progress, unit, variable)
+
+                # Fetch data for the current variable-unit pair
+                success = self.fetch_data(variable, unit)
+                if not success:
+                    self.error_occurred.emit(_("Error while fetching data. D1"))
+                    return
+
+                # Update progress after successful fetch
+                completed_requests += 1
+                progress = int((completed_requests / total_requests) * 100)
+                self.progress_updated.emit(progress, unit, variable)
+        
+        # Emit signal once all data is fetched
+        self.data_fetched.emit()
+
+    def fetch_data(self, variable, unit):
+        """
+        Fetch data from the API for a specific variable and unit, handling pagination.
+
+        Args:
+            variable (str): The variable ID to fetch data for.
+            unit (str): The unit code to fetch data for.
+
+        Returns:
+            bool: True if the data was fetched successfully, False otherwise.
+        """
+        page = 0
+        while True:
+            # Get a valid token for the request
+            token = self.get_valid_token()
+            if not token:
+                self.error_occurred.emit(_("No available tokens. D2"))
+                return False
+            
+            url = f"https://bdl.stat.gov.pl/api/v1/data/by-variable/{variable}"
+            params = {
+                "unit-parent-id": unit,
+                "unit-level": 6,
+                "page": page,
+                "page-size": 100
+            }
+            headers = {"X-ClientId": token}
+
+            response = requests.get(url, headers=headers, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                self.process_response(data)
+                # Stop if there's no next page
+                if "links" not in data or "next" not in data["links"]:
+                    break
+                
+                page += 1
+                time.sleep(1)  # Rate limiting between requests
+            else:
+                self.mark_token_failed(token)
+                continue
+        return True
+
+    def get_valid_token(self):
+        """
+        Select a random valid token that hasn't failed recently.
+
+        Returns:
+            str: A valid token if available, None otherwise.
+        """
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT token FROM tokens
+            WHERE last_failed_time IS NULL OR last_failed_time < ?
+        """, (int(time.time()) - 900,))
+        
+        tokens = cursor.fetchall()
+        conn.close()
+
+        return random.choice(tokens)[0] if tokens else None
+
+    def mark_token_failed(self, token):
+        """
+        Mark a token as failed by updating its `last_failed_time` in the database.
+
+        Args:
+            token (str): The token to mark as failed.
+        """
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE tokens
+            SET last_failed_time = ?
+            WHERE token = ?
+        """, (int(time.time()), token))
+        conn.commit()
+        conn.close()
+
+    def process_response(self, data):
+        """
+        Process the API response and add data to the layer.
+
+        Args:
+            data (dict): The JSON response from the API.
+        """
+        variable_id = str(data["variableId"])
+        
+        for result in data.get("results", []):
+            unit_id = str(result["id"])
+            
+            for value in result["values"]:
+                year = str(value["year"])
+                val = value["val"]
+                
+                self.layer.add_GUS_data(
+                    unit_id,
+                    year,
+                    val,
+                    self.variables_names[variable_id],
+                    self.gmina_geometry_getter
+                )

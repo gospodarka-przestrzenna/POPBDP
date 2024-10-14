@@ -1,0 +1,206 @@
+# POPBDP translation to Polish
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-24 13:47+0100\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: columnname_form.py:52
+msgid "Choose Column Name"
+msgstr "Choose column name"
+
+#: columnname_form.py:55
+#, python-brace-format
+msgid "Choose a column name for the variable (up to {length} characters):"
+msgstr "Choose a column name for the variable (up to {length} characters)."
+
+#: columnname_form.py:67
+msgid "Confirm"
+msgstr "Confirm"
+
+#: columnname_form.py:121 columnname_form.py:135
+#, python-brace-format
+msgid "No name found for variable ID: {id}"
+msgstr "No name found for variable ID: {id}"
+
+#: units_form.py:53 subjects_form.py:57
+msgid "Name"
+msgstr "Name"
+
+#: units_form.py:53
+msgid "Type"
+msgstr "Type"
+
+#: units_form.py:53
+msgid "Short code"
+msgstr "Short code"
+
+#: units_form.py:53
+msgid "Full code"
+msgstr "Full code"
+
+#: units_form.py:68 datafetch_form.py:114 subjects_form.py:72
+#: approach_form.py:66
+msgid "Next"
+msgstr "Next"
+
+#: units_form.py:78
+msgid "Choose territorial units"
+msgstr "Choose territorial units"
+
+#: units_form.py:109 units_form.py:198
+msgid "Voivodeship"
+msgstr "Voivodeship"
+
+#: units_form.py:126 units_form.py:200
+msgid "Subregion"
+msgstr "Subregion"
+
+#: units_form.py:136 units_form.py:151 units_form.py:189 subjects_form.py:111
+#: subjects_form.py:124 subjects_form.py:154
+msgid "Loading..."
+msgstr "Loading..."
+
+#: units_form.py:202
+msgid "County"
+msgstr "County"
+
+#: units_form.py:205
+msgid "City"
+msgstr "City"
+
+#: units_form.py:206
+msgid "Rural commune"
+msgstr "Rural commune"
+
+#: units_form.py:207
+msgid "Urban-rural commune"
+msgstr "Urban-rural commune"
+
+#: units_form.py:208
+msgid "City in urban-rural commune"
+msgstr "City in urban-rural commune"
+
+#: units_form.py:209
+msgid "Rural area in urban-rural commune"
+msgstr "Rural area in urban-rural commune"
+
+#: units_form.py:210 units_form.py:211
+msgid "Unknown type"
+msgstr "Unknown type"
+
+#: datafetch_form.py:49
+msgid "Data Fetching"
+msgstr "Data fetching"
+
+#: datafetch_form.py:57
+msgid "Initializing data fetching..."
+msgstr "Data fetching initialization..."
+
+#: datafetch_form.py:61
+msgid "Finish"
+msgstr "Finish"
+
+#: datafetch_form.py:102
+#, python-format, python-brace-format
+msgid "Fetching data: {value}% complete. (unit: {unit}, variable: {variable})"
+msgstr "Fetching data: {value}% complete. (unit: {unit}, variable: {variable})"
+
+#: datafetch_form.py:112
+msgid "Data fetching completed successfully."
+msgstr "Data fetching completed successfully."
+
+#: datafetch_form.py:124
+#, python-brace-format
+msgid "Error: {message}"
+msgstr "Error: {message}"
+
+#: datafetch_form.py:127
+msgid "Close"
+msgstr "Close"
+
+#: years_form.py:46
+msgid "Select Years"
+msgstr "Select years to add"
+
+#: years_form.py:53
+msgid "Add Layer to Map"
+msgstr "Add layer to map"
+
+#: get_data.py:48
+msgid "Fetch GUS data"
+msgstr "Fetch GUS data"
+
+#: subjects_form.py:50
+msgid "Select Subjects and Variables"
+msgstr "Select subjects and variables to download"
+
+#: subjects_form.py:57
+msgid "Description"
+msgstr "Description / variable unit"
+
+#: subjects_form.py:57
+msgid "Subject ID"
+msgstr "Subject ID"
+
+#: subjects_form.py:105
+msgid "Main subject"
+msgstr "Main subject"
+
+#: subjects_form.py:148
+msgid "Subtopic"
+msgstr "Subtopic"
+
+#: create_layer.py:154 create_layer.py:188 create_layer.py:204
+#, python-brace-format
+msgid "Geometry not found for code: {short_code} {gus_type}"
+msgstr "Geometry not found for code: {short_code} {gus_type}"
+
+#: create_layer.py:239
+#, python-brace-format
+msgid "Name not found for code: {short_code} {type}"
+msgstr "Name not found for code: {short_code} {type}"
+
+#: datafetch_worker.py:53
+msgid "GUS data layer"
+msgstr "GUS data"
+
+#: datafetch_worker.py:83
+msgid "Error while fetching data. D1"
+msgstr "Error while fetching data. D1"
+
+#: datafetch_worker.py:110
+msgid "No available tokens. D2"
+msgstr "No available tokens. Wait for a while D2"
+
+#: approach_form.py:45
+msgid "Choose data granularity"
+msgstr "Choose geometry granularity"
+
+#: approach_form.py:49
+msgid "Choose one of the following options to proceed:"
+msgstr "Choose one of the following options to proceed:"
+
+#: approach_form.py:54
+msgid ""
+"I am interested in data for the smallest division (In the finest division "
+"there are rural and urban areas)"
+msgstr ""
+"I am interested in data for the smallest division (In the finest division "
+"there are rural and urban areas)"
+
+#: approach_form.py:58
+msgid ""
+"I am interested in historical data (In the finest division there are rural-"
+"urban communes)"
+msgstr ""
+"I am interested in historical data (In the finest division there are rural-"
+"urban communes)"
