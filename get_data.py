@@ -64,12 +64,13 @@ class GetData(QAction):
         # before first ever run we need to download the database
         # chech if the database exists
         if not os.path.exists(DB_PATH): 
+            # if not exists we need to download it
             dialog = DataInitializationDialog(DB_PATH, DATABASE_URL)
             if dialog.exec_() != QDialog.Accepted:
                 os.remove(DB_PATH)
                 return
-        # Launch the first form
 
+        # Launch the first form
         self.show_approach_form()
 
     def show_approach_form(self):
