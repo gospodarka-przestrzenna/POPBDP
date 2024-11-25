@@ -1,5 +1,10 @@
 # POPBDP
 Pobieranie obiektów polskich baz danych publicznych
+Downloading objects from the Polish Public Database
+
+
+ - *PL:* Ta wtyczka umożliwia pobieranie danych z GUS (Głównego Urzędu Statystycznego) w celu analizy i wizualizacji w środowisku QGIS. Użytkownik może wybrać interesujące go obszary terytorialne, wskaźniki statystyczne oraz zakres lat, dla których dane mają zostać pobrane. W rezultacie tworzona jest warstwa wektorowa, w której każda jednostka terytorialna jest reprezentowana jako geometria, a wybrane wskaźniki są przypisane jako atrybuty w kolumnach. Dzięki temu dane statystyczne można łatwo przetwarzać, analizować i prezentować w kontekście przestrzennym. Wtyczka wspiera integrację z serwisem API GUS oraz zapewnia dynamiczne tworzenie warstw na podstawie wybranych kryteriów. Jest to narzędzie przydatne zarówno dla analityków, jak i instytucji badawczych, które potrzebują łatwego dostępu do danych statystycznych w kontekście geograficznym.
+- *EN:* This plugin enables the retrieval of data from GUS (Central Statistical Office of Poland) for analysis and visualization within the QGIS environment. Users can select specific territorial areas, statistical indicators, and time ranges for which data should be fetched. As a result, a vector layer is created, where each territorial unit is represented as geometry, and the selected indicators are assigned as attributes in columns. This allows statistical data to be easily processed, analyzed, and presented in a spatial context. The plugin supports integration with the GUS API and provides dynamic layer creation based on user-selected criteria. It is a useful tool for analysts and research institutions that require seamless access to statistical data within a geographic context.
 
 Jakie podejście Cię interesuje 
 
