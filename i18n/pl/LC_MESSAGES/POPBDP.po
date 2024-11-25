@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-24 13:47+0100\n"
+"POT-Creation-Date: 2024-11-25 09:42+0100\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,7 +26,7 @@ msgstr "Wybierz nazwę kolumny dla tej zmiennej (do {length} znaków):"
 msgid "Confirm"
 msgstr "Potwierdź"
 
-#: columnname_form.py:121 columnname_form.py:135
+#: columnname_form.py:127 columnname_form.py:141
 #, python-brace-format
 msgid "No name found for variable ID: {id}"
 msgstr "Nie znaleziono nazwy dla zmiennej ID: {id}"
@@ -56,44 +56,44 @@ msgstr "Dalej"
 msgid "Choose territorial units"
 msgstr "Wybierz jednostki terytorialne pobieranych danych"
 
-#: units_form.py:109 units_form.py:198
+#: units_form.py:109 units_form.py:200
 msgid "Voivodeship"
 msgstr "Województwo"
 
-#: units_form.py:126 units_form.py:200
+#: units_form.py:126 units_form.py:202
 msgid "Subregion"
 msgstr "Podregion"
 
-#: units_form.py:136 units_form.py:151 units_form.py:189 subjects_form.py:111
+#: units_form.py:136 units_form.py:151 units_form.py:191 subjects_form.py:111
 #: subjects_form.py:124 subjects_form.py:154
 msgid "Loading..."
 msgstr "Ładowanie..."
 
-#: units_form.py:202
+#: units_form.py:204
 msgid "County"
 msgstr "Powiat"
 
-#: units_form.py:205
+#: units_form.py:207
 msgid "City"
 msgstr "Miasto"
 
-#: units_form.py:206
+#: units_form.py:208
 msgid "Rural commune"
 msgstr "Gmina wiejska"
 
-#: units_form.py:207
+#: units_form.py:209
 msgid "Urban-rural commune"
 msgstr "Gmina miejsko-wiejska"
 
-#: units_form.py:208
+#: units_form.py:210
 msgid "City in urban-rural commune"
 msgstr "Miasto w gminie miejsko-wiejskiej"
 
-#: units_form.py:209
+#: units_form.py:211
 msgid "Rural area in urban-rural commune"
 msgstr "Wiejski obszar w gminie miejsko-wiejskiej"
 
-#: units_form.py:210 units_form.py:211
+#: units_form.py:212 units_form.py:213
 msgid "Unknown type"
 msgstr "Nieznany typ"
 
@@ -123,9 +123,35 @@ msgstr "Pobieranie danych zakończone pomyślnie."
 msgid "Error: {message}"
 msgstr "Błąd: {message}"
 
-#: datafetch_form.py:127
+#: datafetch_form.py:127 initialization_form.py:109
 msgid "Close"
 msgstr "Zamknij"
+
+#: initialization_form.py:56
+msgid "Initializing Plugin"
+msgstr "Inicjalizacja wtyczki"
+
+#: initialization_form.py:60
+msgid "Checking database file..."
+msgstr "Sprawdzanie pliku bazy danych..."
+
+#: initialization_form.py:68
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: initialization_form.py:98
+#, python-brace-format
+msgid "Downloading database file: {progress}%"
+msgstr "Pobieranie pliku bazy danych: {progress}%"
+
+#: initialization_form.py:103
+msgid "Database file downloaded successfully."
+msgstr "Pobieranie danych zakończone pomyślnie."
+
+#: initialization_form.py:108
+#, python-brace-format
+msgid "Download failed: {error}"
+msgstr "Błąd pobierania: {error}"
 
 #: years_form.py:46
 msgid "Select Years"
@@ -135,7 +161,7 @@ msgstr "Wybierz lata"
 msgid "Add Layer to Map"
 msgstr "Dodaj warstwę do mapy"
 
-#: get_data.py:48
+#: get_data.py:49
 msgid "Fetch GUS data"
 msgstr "Pobierz dane GUS"
 
@@ -158,6 +184,18 @@ msgstr "Temat"
 #: subjects_form.py:148
 msgid "Subtopic"
 msgstr "Podtemat"
+
+#: create_layer.py:57
+msgid "short_code"
+msgstr "Skrócony kod"
+
+#: create_layer.py:58
+msgid "type"
+msgstr "Typ"
+
+#: create_layer.py:59
+msgid "name"
+msgstr "Nazwa"
 
 #: create_layer.py:154 create_layer.py:188 create_layer.py:204
 #, python-brace-format

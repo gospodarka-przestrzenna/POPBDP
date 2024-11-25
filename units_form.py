@@ -1,23 +1,14 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# Copyright (C) 2018 Wawrzyniec Zipser, Maciej Kamiński (maciej.kaminski@pwr.edu.pl) Politechnika Wrocławska
+# Copyright (C) 2024 Wawrzyniec Zipser, Maciej Kamiński (maciej.kaminski@pwr.edu.pl)
 #
-# This source is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free
-# Software Foundation; either version 2 of the License, or (at your option)
-# any later version.
-#
-# This code is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
 #
 ###############################################################################
+__author__ = 'Wawrzyniec Zipser, Maciej Kamiński Politechnika Wrocławska'
 
 import sqlite3
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -152,7 +143,9 @@ class UnitsForm(QDialog):
             item.removeRow(0)  # Remove dummy item
             parent_code = item.data()
             self.load_children(item, parent_code)
-
+            # when item is seelected its children must be checked
+            if item.checkState() == Qt.Checked:
+                self.check_children(item)
     def load_children(self, parent_item, parent_code):
         """
         Loads children of a given parent item (counties and communes).
@@ -210,6 +203,40 @@ class UnitsForm(QDialog):
             }.get(kind, _("Unknown type"))
         return _("Unknown type")
 
+    def check_children(self,item):
+        """
+        Checks all children of an item.
+
+        Args:
+            item (QStandardItem): The item whose children will be checked.
+        """
+        for row in range(item.rowCount()):
+            child = item.child(row)
+            if child.isCheckable():
+                if item.checkState() == Qt.Checked:
+                    if child.data() in self.selected_codes:
+                        self.selected_codes.remove(child.data())
+                child.setFlags(child.flags() & ~Qt.ItemIsEnabled)
+                child.setCheckState(Qt.Checked)
+                self.check_children(child)
+
+    def uncheck_children(self,item):
+        """
+        Unchecks all children of an item.
+        
+        Args:
+            item (QStandardItem): The item whose children will be unchecked.
+        """
+        for row in range(item.rowCount()):
+            child = item.child(row)
+            if child.isCheckable():
+                if item.checkState() == Qt.Unchecked:
+                    if child.data() in self.selected_codes:
+                        self.selected_codes.remove(child.data())
+                child.setCheckState(Qt.Unchecked)
+                child.setFlags(child.flags() | Qt.ItemIsEnabled)
+                self.uncheck_children(child)
+
     def on_item_changed(self, item: QStandardItem):
         """
         Updates the selected codes list when a checkbox state changes.
@@ -217,36 +244,15 @@ class UnitsForm(QDialog):
         Args:
             item (QStandardItem): The item whose checkbox state changed.
         """
-        def check_children(item):
-            for row in range(item.rowCount()):
-                child = item.child(row)
-                if child.isCheckable():
-                    if item.checkState() == Qt.Checked:
-                        if child.data() in self.selected_codes:
-                            self.selected_codes.remove(child.data())
-                    child.setFlags(child.flags() & ~Qt.ItemIsEnabled)
-                    child.setCheckState(Qt.Checked)
-                    check_children(child)
-
-        def uncheck_children(item):
-            for row in range(item.rowCount()):
-                child = item.child(row)
-                if child.isCheckable():
-                    if item.checkState() == Qt.Unchecked:
-                        if child.data() in self.selected_codes:
-                            self.selected_codes.remove(child.data())
-                    child.setCheckState(Qt.Unchecked)
-                    child.setFlags(child.flags() | Qt.ItemIsEnabled)
-                    uncheck_children(child)
 
         if item.isCheckable() and item.isEnabled():
             code = item.data()
             if item.checkState() == Qt.Checked:
-                check_children(item)
+                self.check_children(item)
                 if code not in self.selected_codes:
                     self.selected_codes.append(code)
             else:
-                uncheck_children(item)
+                self.uncheck_children(item)
                 if code in self.selected_codes:
                     self.selected_codes.remove(code)
 

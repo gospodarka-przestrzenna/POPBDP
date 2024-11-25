@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-24 13:47+0100\n"
+"POT-Creation-Date: 2024-11-25 09:42+0100\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,7 +26,7 @@ msgstr "Choose a column name for the variable (up to {length} characters)."
 msgid "Confirm"
 msgstr "Confirm"
 
-#: columnname_form.py:121 columnname_form.py:135
+#: columnname_form.py:127 columnname_form.py:141
 #, python-brace-format
 msgid "No name found for variable ID: {id}"
 msgstr "No name found for variable ID: {id}"
@@ -56,44 +56,44 @@ msgstr "Next"
 msgid "Choose territorial units"
 msgstr "Choose territorial units"
 
-#: units_form.py:109 units_form.py:198
+#: units_form.py:109 units_form.py:200
 msgid "Voivodeship"
 msgstr "Voivodeship"
 
-#: units_form.py:126 units_form.py:200
+#: units_form.py:126 units_form.py:202
 msgid "Subregion"
 msgstr "Subregion"
 
-#: units_form.py:136 units_form.py:151 units_form.py:189 subjects_form.py:111
+#: units_form.py:136 units_form.py:151 units_form.py:191 subjects_form.py:111
 #: subjects_form.py:124 subjects_form.py:154
 msgid "Loading..."
 msgstr "Loading..."
 
-#: units_form.py:202
+#: units_form.py:204
 msgid "County"
 msgstr "County"
 
-#: units_form.py:205
+#: units_form.py:207
 msgid "City"
 msgstr "City"
 
-#: units_form.py:206
+#: units_form.py:208
 msgid "Rural commune"
 msgstr "Rural commune"
 
-#: units_form.py:207
+#: units_form.py:209
 msgid "Urban-rural commune"
 msgstr "Urban-rural commune"
 
-#: units_form.py:208
+#: units_form.py:210
 msgid "City in urban-rural commune"
 msgstr "City in urban-rural commune"
 
-#: units_form.py:209
+#: units_form.py:211
 msgid "Rural area in urban-rural commune"
 msgstr "Rural area in urban-rural commune"
 
-#: units_form.py:210 units_form.py:211
+#: units_form.py:212 units_form.py:213
 msgid "Unknown type"
 msgstr "Unknown type"
 
@@ -123,9 +123,35 @@ msgstr "Data fetching completed successfully."
 msgid "Error: {message}"
 msgstr "Error: {message}"
 
-#: datafetch_form.py:127
+#: datafetch_form.py:127 initialization_form.py:109
 msgid "Close"
 msgstr "Close"
+
+#: initialization_form.py:56
+msgid "Initializing Plugin"
+msgstr "Initializing Plugin"
+
+#: initialization_form.py:60
+msgid "Checking database file..."
+msgstr "Checking database file..."
+
+#: initialization_form.py:68
+msgid "Cancel"
+msgstr "Cancel"
+
+#: initialization_form.py:98
+#, python-brace-format
+msgid "Downloading database file: {progress}%"
+msgstr "Downloading database file: {progress}%"
+
+#: initialization_form.py:103
+msgid "Database file downloaded successfully."
+msgstr "Database file downloaded successfully."
+
+#: initialization_form.py:108
+#, python-brace-format
+msgid "Download failed: {error}"
+msgstr "Download failed: {error}"
 
 #: years_form.py:46
 msgid "Select Years"
@@ -135,7 +161,7 @@ msgstr "Select years to add"
 msgid "Add Layer to Map"
 msgstr "Add layer to map"
 
-#: get_data.py:48
+#: get_data.py:49
 msgid "Fetch GUS data"
 msgstr "Fetch GUS data"
 
@@ -158,6 +184,18 @@ msgstr "Main subject"
 #: subjects_form.py:148
 msgid "Subtopic"
 msgstr "Subtopic"
+
+#: create_layer.py:57
+msgid "short_code"
+msgstr "Short code"
+
+#: create_layer.py:58
+msgid "type"
+msgstr "Type"   
+
+#: create_layer.py:59
+msgid "name"
+msgstr "Name"
 
 #: create_layer.py:154 create_layer.py:188 create_layer.py:204
 #, python-brace-format

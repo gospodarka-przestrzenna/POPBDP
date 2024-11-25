@@ -1,35 +1,26 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# Copyright (C) 2018 Wawrzyniec Zipser, Maciej Kamiński (kaminski.maciej@pwr.edu.pl) Politechnika Wrocławska
+# Copyright (C) 2024 Wawrzyniec Zipser, Maciej Kamiński (maciej.kaminski@pwr.edu.pl)
 #
-# This source is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free
-# Software Foundation; either version 2 of the License, or (at your option)
-# any later version.
-#
-# This code is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
 #
 ###############################################################################
 __author__ = 'Wawrzyniec Zipser, Maciej Kamiński Politechnika Wrocławska'
 
-
 from PyQt5.QtWidgets import QAction, QDialog
 from qgis.core import QgsProject
+import os
 from .translations import _
-from .config import DB_PATH
+from .config import DB_PATH,DATABASE_URL
 from .subjects_form import SubjectsForm
 from .units_form import UnitsForm
 from .years_form import YearsForm
 from .datafetch_form import DataFetchForm
 from .approach_form import ApproachForm
+from .initialization_form import DataInitializationDialog
 
 class GetData(QAction):
     """
@@ -69,7 +60,16 @@ class GetData(QAction):
 
         self.layer = None
 
+        
+        # before first ever run we need to download the database
+        # chech if the database exists
+        if not os.path.exists(DB_PATH): 
+            dialog = DataInitializationDialog(DB_PATH, DATABASE_URL)
+            if dialog.exec_() != QDialog.Accepted:
+                os.remove(DB_PATH)
+                return
         # Launch the first form
+
         self.show_approach_form()
 
     def show_approach_form(self):
