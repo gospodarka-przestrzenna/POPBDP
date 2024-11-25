@@ -175,7 +175,7 @@ msgstr "Opis / jednostka"
 
 #: subjects_form.py:57
 msgid "Subject ID"
-msgstr "identyfikator tematu"
+msgstr "Identyfikator tematu"
 
 #: subjects_form.py:105
 msgid "Main subject"
