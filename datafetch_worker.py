@@ -19,7 +19,8 @@ from .config import DB_PATH
 import requests
 import time
 import random
-
+from .utils.teryt import Teryt
+from .utils.tokens import Tokens
 class DataFetchWorker(QThread):
     """
     Worker thread for fetching data from the API. Handles progress updates, error handling,
@@ -46,13 +47,14 @@ class DataFetchWorker(QThread):
 
         self.do_merge = do_merge
         self.units = units
+        self.full_units = Teryt().final_codes(units, do_merge)
         self.variables = variables
         self.variables_names = variables_names
-
-        # Assign the geometry getter based on the `do_merge` flag
-        self.gmina_geometry_getter = (
-            self.layer.get_gmina_geometry_merged if do_merge else self.layer.get_gmina_geometry_splitted
-        )
+        
+        print("Units:", self.full_units)
+        
+        for unit in self.full_units:
+            self.layer.create_new_feature(unit)
 
     def run(self):
         """
@@ -97,7 +99,7 @@ class DataFetchWorker(QThread):
         page = 0
         while True:
             # Get a valid token for the request
-            token = self.get_valid_token()
+            token = Tokens().get_random_token()
             if not token:
                 self.error_occurred.emit(_("No available tokens. D2"))
                 return False
@@ -122,31 +124,10 @@ class DataFetchWorker(QThread):
                 page += 1
                 time.sleep(1)  # Rate limiting between requests
             else:
-                self.mark_token_failed(token)
+                Tokens().mark_token_failed(token)   
                 continue
         return True
 
-    def get_valid_token(self):
-        """
-        Select a random valid token that hasn't failed recently.
-
-        Returns:
-            str: A valid token if available, None otherwise.
-        """
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT token FROM tokens
-            WHERE last_failed_time IS NULL OR last_failed_time < ?
-        """, (int(time.time()) - 900,))
-        
-        tokens = cursor.fetchall()
-        conn.close()
-
-        return random.choice(tokens)[0] if tokens else None
-
-    def mark_token_failed(self, token):
         """
         Mark a token as failed by updating its `last_failed_time` in the database.
 
@@ -183,6 +164,5 @@ class DataFetchWorker(QThread):
                     unit_id,
                     year,
                     val,
-                    self.variables_names[variable_id],
-                    self.gmina_geometry_getter
+                    self.variables_names[variable_id]
                 )

@@ -16,7 +16,8 @@ import binascii
 from .config import DB_PATH
 from qgis.core import QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsProject
 from qgis.PyQt.QtCore import QVariant
-from .translations import _
+from .translations import _,gus_language
+from .utils.teryt import Teryt    
 
 class Layer(QgsVectorLayer):
     """
@@ -54,7 +55,7 @@ class Layer(QgsVectorLayer):
         # Tracks years and their corresponding column indices
         self.year_columns = {}
 
-    def create_new_feature(self, unit_id, get_geom_n_type):
+    def create_new_feature(self, unit_id):
         """
         Creates a new feature for the specified unit and adds it to the layer.
 
@@ -65,28 +66,31 @@ class Layer(QgsVectorLayer):
         Returns:
             bool: True if the feature was created successfully, False otherwise.
         """
-        short_code = unit_id[2:4] + unit_id[7:11]
+        shorter_code = unit_id[2:4] + unit_id[7:11]
         gus_type = unit_id[11]
 
-        # Retrieve geometry and type
-        geometry, bdot_type = get_geom_n_type(short_code, gus_type)
+        # Retrieve geometry and type for the unit
+        print("create_new_feature",shorter_code+gus_type)
+        geometry, bdot_type = self.get_geometry(shorter_code+gus_type)
         if geometry is None:
             return False
 
         # Create a new feature and set its attributes
         feature = QgsFeature()
         self.feature_index[unit_id[:11] + bdot_type] = feature
-        self.feature_index[unit_id[:11] + gus_type] = feature
 
         feature.setGeometry(geometry)
-        name = self.get_name(short_code, bdot_type)
-        feature.setAttributes([short_code, bdot_type, name])
+        name = Teryt().code_to_name(shorter_code,gus_type, gus_language)
+        if name is None:
+            print(f"Name not found for code: {shorter_code+gus_type}")
+
+        feature.setAttributes([shorter_code, bdot_type, name])
 
         # Add the feature to the provider
         self.provider.addFeature(feature)
         return True
 
-    def add_GUS_data(self, unit_id, year, value, column_prefix, get_geom_n_type):
+    def add_GUS_data(self, unit_id, year, value, column_prefix):
         """
         Adds data for a specific unit and year to the layer.
 
@@ -98,9 +102,15 @@ class Layer(QgsVectorLayer):
             get_geom_n_type (function): Geometry and type retrieval function.
         """
         year = str(year)
+
+        if unit_id not in self.feature_index and unit_id[-1] == '2':
+            # probably we add the data to '...3'
+            print(f"Adding {unit_id} to '...3'")
+            unit_id = unit_id[:-1] + '3'
+
         if unit_id not in self.feature_index:
-            if not self.create_new_feature(unit_id, get_geom_n_type):
-                return
+            print(f"Dodawanie {unit_id} nie było przewidziane")
+            return
 
         if year not in self.year_columns:
             self.year_columns[year] = []
@@ -119,93 +129,146 @@ class Layer(QgsVectorLayer):
         feature = self.feature_index[unit_id]
         self.provider.changeAttributeValues({feature.id(): {self.column_index[column]: value}})
 
-    def get_gmina_geometry_merged(self, short_code, gus_type):
-        """
-        Retrieves merged geometry for a unit.
+    # def get_gmina_geometry_merged(self, short_code, gus_type):
+    #     """
+    #     Retrieves merged geometry for a unit.
 
-        Args:
-            short_code (str): Short code of the unit.
-            gus_type (str): GUS type of the unit.
+    #     Args:
+    #         short_code (str): Short code of the unit.
+    #         gus_type (str): GUS type of the unit.
 
-        Returns:
-            tuple: Geometry and type of the unit.
-        """
+    #     Returns:
+    #         tuple: Geometry and type of the unit.
+    #     """
+    #     with sqlite3.connect(DB_PATH) as conn:
+    #         cursor = conn.cursor()
+    #         if gus_type in ['4', '5']:
+    #             return None, None
+
+    #         cursor.execute("""
+    #             SELECT hex(geom), type
+    #             FROM geometries
+    #             WHERE code = ? 
+    #         """, (short_code,))
+    #         result = cursor.fetchone()
+    #         if not result:
+    #             raise ValueError(_("Geometry not found for code: {short_code} {gus_type}").format(short_code=short_code, gus_type=gus_type))
+
+    #         hex_geom, type = result
+    #         wkb_hex = hex_geom[80:]
+    #         wkb_bytes = binascii.unhexlify(wkb_hex)
+    #         geometry = QgsGeometry()
+    #         geometry.fromWkb(wkb_bytes)
+    #         return geometry, type
+
+    def _hex_to_geometry(self, hex_geom):
+        wkb_hex = hex_geom#[80:]
+        wkb_bytes = binascii.unhexlify(wkb_hex)
+        geometry = QgsGeometry()
+        geometry.fromWkb(wkb_bytes)
+        return geometry
+    
+    def get_geometry(self, short_code):
+
+        gus_type  = short_code[-1]
+        outline = short_code[:-1]
+
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
-            if gus_type in ['4', '5']:
-                return None, None
-
             cursor.execute("""
-                SELECT hex(geom), typ
-                FROM gminy
-                WHERE code = ? 
-            """, (short_code,))
-            result = cursor.fetchone()
+                SELECT hex(geometry),type
+                FROM geometries
+                WHERE code = ?
+            """, (outline,))
+            result = cursor.fetchall()
             if not result:
                 raise ValueError(_("Geometry not found for code: {short_code} {gus_type}").format(short_code=short_code, gus_type=gus_type))
+            
+            if len(result) == 1:
+                hex_geom,type = result[0]
+                geometry = self._hex_to_geometry(hex_geom)
+                assert type == gus_type
+                return geometry, type
 
-            hex_geom, type = result
-            wkb_hex = hex_geom[80:]
-            wkb_bytes = binascii.unhexlify(wkb_hex)
-            geometry = QgsGeometry()
-            geometry.fromWkb(wkb_bytes)
-            return geometry, type
+            elif len(result) == 2:
+                geometry1,type1 = result[0]
+                geometry2,type2 = result[1]
 
-    def get_gmina_geometry_splitted(self, short_code, gus_type):
-        """
-        Retrieves individual geometries for rural and urban areas.
-
-        Args:
-            short_code (str): Short code of the unit.
-            gus_type (str): GUS type of the unit.
-
-        Returns:
-            tuple: Geometry and type of the unit.
-        """
-        with sqlite3.connect(DB_PATH) as conn:
-            cursor = conn.cursor()
+                assert '3' in [type1,type2]
+                if type1 == '3':
+                    urban_rural=self._hex_to_geometry(geometry1)
+                    urban = self._hex_to_geometry(geometry2)
+                else:
+                    urban_rural=self._hex_to_geometry(geometry2)
+                    urban = self._hex_to_geometry(geometry1)
+            else:
+                raise ValueError(_("To much geometreis_"))
+            print ("UR")
             if gus_type == '3':
-                return None, None
-
-            # Retrieve city geometry
-            if gus_type in ['4', '5']:
-                cursor.execute("""
-                    SELECT hex(geom), typ
-                    FROM miasta
-                    WHERE code = ?
-                """, (short_code,))
-                result = cursor.fetchone()
-                if not result:
-                    raise ValueError(_("Geometry not found for code: {short_code} {gus_type}").format(short_code=short_code, gus_type=gus_type))
-                hex_geom, _ = result
-                wkb_hex = hex_geom[80:]
-                wkb_bytes = binascii.unhexlify(wkb_hex)
-                city_geometry = QgsGeometry()
-                city_geometry.fromWkb(wkb_bytes)
-
-            # Retrieve commune geometry
-            if gus_type in ['1', '2', '5']:
-                cursor.execute("""
-                    SELECT hex(geom), typ
-                    FROM gminy
-                    WHERE code = ?
-                """, (short_code,))
-                result = cursor.fetchone()
-                if not result:
-                    raise ValueError(_("Geometry not found for code: {short_code} {gus_type}").format(short_code=short_code, gus_type=gus_type))
-                hex_geom, bdot_type = result
-                wkb_hex = hex_geom[80:]
-                wkb_bytes = binascii.unhexlify(wkb_hex)
-                gmina_geometry = QgsGeometry()
-                gmina_geometry.fromWkb(wkb_bytes)
-
+                return urban_rural, '3'
             if gus_type == '4':
-                return city_geometry, '4'
+                return urban, '4'
             if gus_type == '5':
-                rural_geometry = gmina_geometry.difference(city_geometry)
-                return rural_geometry, '5'
+                rural = urban_rural.difference(urban)
+                return rural, '5'
+        
+        print("None")
+        return None, None        
+    # def get_gmina_geometry_splitted(self, short_code, gus_type):
+    #     """
+    #     Retrieves individual geometries for rural and urban areas.
 
-            return gmina_geometry, bdot_type
+    #     Args:
+    #         short_code (str): Short code of the unit.
+    #         gus_type (str): GUS type of the unit.
+
+    #     Returns:
+    #         tuple: Geometry and type of the unit.
+    #     """
+    #     with sqlite3.connect(DB_PATH) as conn:
+    #         cursor = conn.cursor()
+    #         if gus_type == '3':
+    #             return None, None
+
+    #         # Retrieve city geometry
+    #         if gus_type in ['4', '5']:
+    #             cursor.execute("""
+    #                 SELECT hex(geom), type
+    #                 FROM geometries
+    #                 WHERE code = ?
+    #             """, (short_code,))
+    #             result = cursor.fetchone()
+    #             if not result:
+    #                 raise ValueError(_("Geometry not found for code: {short_code} {gus_type}").format(short_code=short_code, gus_type=gus_type))
+    #             hex_geom, _ = result
+    #             wkb_hex = hex_geom[80:]
+    #             wkb_bytes = binascii.unhexlify(wkb_hex)
+    #             city_geometry = QgsGeometry()
+    #             city_geometry.fromWkb(wkb_bytes)
+
+    #         # Retrieve commune geometry
+    #         if gus_type in ['1', '2', '5']:
+    #             cursor.execute("""
+    #                 SELECT hex(geom), typ
+    #                 FROM gminy
+    #                 WHERE code = ?
+    #             """, (short_code,))
+    #             result = cursor.fetchone()
+    #             if not result:
+    #                 raise ValueError(_("Geometry not found for code: {short_code} {gus_type}").format(short_code=short_code, gus_type=gus_type))
+    #             hex_geom, bdot_type = result
+    #             wkb_hex = hex_geom[80:]
+    #             wkb_bytes = binascii.unhexlify(wkb_hex)
+    #             gmina_geometry = QgsGeometry()
+    #             gmina_geometry.fromWkb(wkb_bytes)
+
+    #         if gus_type == '4':
+    #             return city_geometry, '4'
+    #         if gus_type == '5':
+    #             rural_geometry = gmina_geometry.difference(city_geometry)
+    #             return rural_geometry, '5'
+
+    #         return gmina_geometry, bdot_type
 
     def get_name(self, short_code, type):
         """

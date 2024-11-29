@@ -14,7 +14,7 @@ from os import path
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
-from .get_data import GetData
+from .get_data import GetBDLData
 
 class POPBDP(object):
     def __init__(self,iface):
@@ -24,7 +24,7 @@ class POPBDP(object):
         self.menu_actions=[]
         #adding actions
         # Here add actions 
-        self.menu_actions.append(GetData(self))
+        self.menu_actions.append(GetBDLData(self))
 
 
     def initGui(self):

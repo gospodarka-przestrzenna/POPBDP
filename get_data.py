@@ -22,7 +22,7 @@ from .datafetch_form import DataFetchForm
 from .approach_form import ApproachForm
 from .initialization_form import DataInitializationDialog
 
-class GetData(QAction):
+class GetBDLData(QAction):
     """
     GetData class manages the main logic and workflow of the plugin, 
     connecting various forms and data fetching functionalities.
@@ -79,12 +79,12 @@ class GetData(QAction):
         to the next form (subjects selection).
         """
         self.approach_form = ApproachForm()
-        self.approach_form.accepted.connect(self.show_units_form)
         result = self.approach_form.exec_()
         if result == QDialog.Rejected:
             # If the dialog is closed, terminate the plugin
             return
         self.do_merge = self.approach_form.option2.isChecked()
+        self.show_units_form()
 
     def show_units_form(self):
         """
@@ -92,12 +92,13 @@ class GetData(QAction):
         and connects its completion to the subjects form.
         """
         self.units_form = UnitsForm(self.do_merge)
-        self.units_form.accepted.connect(self.show_subjects_form)
+        
         result = self.units_form.exec_()
         if result == QDialog.Rejected:
             # If the dialog is closed, terminate the plugin
             return
         self.units = self.units_form.selected_codes
+        self.show_subjects_form()
 
     def show_subjects_form(self):
         """
@@ -105,13 +106,13 @@ class GetData(QAction):
         to the data fetching form.
         """
         self.subjects_form = SubjectsForm(self.variableNames)
-        self.subjects_form.accepted.connect(self.show_datafetch_form) 
-        result = self.subjects_form.show()
+        result = self.subjects_form.exec_()
         if result == QDialog.Rejected:
             # If the dialog is closed, terminate the plugin
             return
         self.variables = self.subjects_form.selected_codes
         self.variableNames = self.subjects_form.variableNames
+        self.show_datafetch_form()
 
     def show_datafetch_form(self):
         """
@@ -124,12 +125,11 @@ class GetData(QAction):
             self.variables,
             self.variableNames,
         )
-        self.datafetch_form.accepted.connect(self.show_years_form)
         result = self.datafetch_form.exec_()
         if result == QDialog.Rejected:
             # If the dialog is closed, terminate the plugin
             return
-        
+        self.show_years_form()
         
     def show_years_form(self):
         """
@@ -141,12 +141,11 @@ class GetData(QAction):
         self.layer = self.datafetch_form.worker.layer
 
         self.years_form = YearsForm(self.layer.year_columns.keys())
-        self.years_form.accepted.connect(self.process_data)
         result = self.years_form.exec_()
         if result == QDialog.Rejected:
             # If the dialog is closed, terminate the plugin
             return
-        
+        self.process_data()
         
 
     def process_data(self):

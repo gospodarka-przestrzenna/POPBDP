@@ -15,8 +15,8 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QTreeView, QVBoxLayout, QPushButton, QHeaderView, QDialog
 from PyQt5.QtCore import Qt
 from .config import DB_PATH
-from .translations import _
-
+from .translations import _, gus_language
+from .utils.teryt import Teryt
 
 class UnitsForm(QDialog):
     """
@@ -35,6 +35,7 @@ class UnitsForm(QDialog):
 
         self.do_merge = do_merge  # Merge flag for handling smallest units
         self.selected_codes = []  # List to store selected codes
+        self.teryt = Teryt()
 
         # Tree view to display territorial units
         self.tree_view = QTreeView()
@@ -84,11 +85,11 @@ class UnitsForm(QDialog):
             cursor = conn.cursor()
             
             # Fetch voivodeships (level 2)
-            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE level = 2")
+            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE level = 2 and language = ?", (gus_language,))
             regions = cursor.fetchall()
 
             # Fetch subregions (level 4)
-            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE level = 4")
+            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE level = 4 and language = ?", (gus_language,))
             subregions = cursor.fetchall()
 
             for full_code, short_code, name, kind, level in regions:
@@ -154,34 +155,32 @@ class UnitsForm(QDialog):
             parent_item (QStandardItem): The parent item in the tree view.
             parent_code (str): The full code of the parent item.
         """
-        with sqlite3.connect(DB_PATH) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT full_code, short_code, name, kind, level FROM teryt_codes WHERE parent_code = ?", (parent_code,))
-            children = cursor.fetchall()
+
+        childrens = self.teryt.childrens(parent_code, self.do_merge, gus_language)
+        
+        for short_code,full_code, parent_code, name, kind, level, lang, expandable in childrens:
             
-            for full_code, short_code, name, kind, level in children:
-                type_name = self.get_type_name(level, kind)
+            type_name = self.get_type_name(level, kind)
 
-                child_item = QStandardItem(name)
-                child_item.setData(full_code)
-                child_item.setFlags(child_item.flags() & ~Qt.ItemIsEditable)
-                if level == 5 or level == 6:
-                    child_item.setCheckable(True)
+            child_item = QStandardItem(name)
+            child_item.setData(full_code)
+            child_item.setFlags(child_item.flags() & ~Qt.ItemIsEditable)
+            child_item.setCheckable(True)
+            
+            type_item = QStandardItem(type_name)
+            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
 
-                type_item = QStandardItem(type_name)
-                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+            short_code_item = QStandardItem(short_code)
+            short_code_item.setFlags(short_code_item.flags() & ~Qt.ItemIsEditable)
 
-                short_code_item = QStandardItem(short_code)
-                short_code_item.setFlags(short_code_item.flags() & ~Qt.ItemIsEditable)
+            full_code_item = QStandardItem(full_code)
+            full_code_item.setFlags(full_code_item.flags() & ~Qt.ItemIsEditable)
 
-                full_code_item = QStandardItem(full_code)
-                full_code_item.setFlags(full_code_item.flags() & ~Qt.ItemIsEditable)
+            
+            if expandable:
+                child_item.appendRow([QStandardItem(_("Loading...")), QStandardItem(""), QStandardItem(""), QStandardItem("")])
 
-                # Add dummy item for further expansion (communes)
-                if level == 5 or (level == 6 and kind == '3' and not self.do_merge):
-                    child_item.appendRow([QStandardItem(_("Loading...")), QStandardItem(""), QStandardItem(""), QStandardItem("")])
-
-                parent_item.appendRow([child_item, type_item, short_code_item, full_code_item])
+            parent_item.appendRow([child_item, type_item, short_code_item, full_code_item])
 
     def get_type_name(self, level, kind):
         """
@@ -199,7 +198,8 @@ class UnitsForm(QDialog):
                 '2': _("Rural commune"),
                 '3': _("Urban-rural commune"),
                 '4': _("City in urban-rural commune"),
-                '5': _("Rural area in urban-rural commune")
+                '5': _("Rural area in urban-rural commune"),
+                '8': _("City district"),
             }.get(kind, _("Unknown type"))
         return _("Unknown type")
 

@@ -17,7 +17,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QTreeView, QVBoxLayout, QPushButton, QHeaderView, QLabel
 from PyQt5.QtCore import Qt
 from .config import DB_PATH
-from .translations import _
+from .translations import _, gus_language
 from .columnname_form import ChooseColumnName
 
 
@@ -85,7 +85,7 @@ class SubjectsForm(QDialog):
         """Loads the root-level subjects from the database into the tree view."""
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, name FROM subjects WHERE parent_id IS NULL")
+            cursor.execute("SELECT subject_code, name FROM subjects WHERE parent_id IS NULL and language = ?", (gus_language,))
             subjects = cursor.fetchall()
             
             for subject_id, subject_name in subjects:
@@ -130,17 +130,17 @@ class SubjectsForm(QDialog):
         """
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, name FROM subjects WHERE parent_id = ?", (parent_id,))
+            cursor.execute("SELECT subject_code, name FROM subjects WHERE parent_id = ? and language = ?", (parent_id,gus_language))
             children = cursor.fetchall()
             
-            for child_id, child_name in children:
+            for subject_code, child_name in children:
                 # Create a child item
                 child_item = QStandardItem(child_name)
-                child_item.setData(child_id)
+                child_item.setData(subject_code)
                 child_item.setFlags(child_item.flags() & ~Qt.ItemIsEditable)
                 description_item = QStandardItem(_("Subtopic"))
                 description_item.setFlags(description_item.flags() & ~Qt.ItemIsEditable)
-                code = QStandardItem(child_id)
+                code = QStandardItem(subject_code)
                 code.setFlags(code.flags() & ~Qt.ItemIsEditable)
                 
                 # Add a dummy child for further expansion
@@ -148,7 +148,7 @@ class SubjectsForm(QDialog):
                 parent_item.appendRow([child_item, description_item, code])
 
             # Load variables for the parent item
-            cursor.execute("SELECT id, n1, n2, n3, n4, n5, measure_unit_name FROM variables WHERE subject_id = ?", (parent_id,))
+            cursor.execute("SELECT id, n1, n2, n3, n4, n5, measure_unit_name FROM variables WHERE subject_id = ? and language = ?", (parent_id,gus_language))
             variables = cursor.fetchall()
             
             for var_id, var_name1, var_name2, var_name3, var_name4, var_name5, measure_unit_name in variables:

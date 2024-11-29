@@ -38,7 +38,7 @@ def setup_translations(domain="POPBDP", locale_path="i18n"):
 
     # Load translations for the detected language
     translator = gettext.translation(domain, abs_locale_path, languages=[lang], fallback=True)
-    return translator.gettext
+    return translator.gettext, 'pl' if lang == 'pl' else 'en'
 
 # Initialize the `_` function for translations
-_ = setup_translations()
+_, gus_language = setup_translations()

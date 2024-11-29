@@ -12,7 +12,7 @@ __author__ = 'Wawrzyniec Zipser, Maciej Kamiński Politechnika Wrocławska'
 
 import sqlite3
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit
-from .translations import _
+from .translations import _, gus_language
 from .config import DB_PATH
 
 
@@ -108,24 +108,24 @@ class ChooseColumnName(QDialog):
 
             # Fetch variable details
             cursor.execute("""
-                SELECT subject_id, n1, n2, n3, n4, n5, n6, measure_unit_name
+                SELECT subject_id, n1, n2, n3, n4, n5, measure_unit_name
                 FROM variables
-                WHERE id = ?
-            """, (variable_id,))
+                WHERE id = ? and language = ?
+            """, (variable_id,gus_language))
 
             result = cursor.fetchone()
             if not result:
                 raise ValueError(_("No name found for variable ID: {id}").format(id=variable_id))
 
-            subject_id, n1, n2, n3, n4, n5, n6, measure_unit_name = result
-            name = " ".join([x for x in [n1, n2, n3, n4, n5, n6] if x is not None])
+            subject_id, n1, n2, n3, n4, n5, measure_unit_name = result
+            name = " ".join([x for x in [n1, n2, n3, n4, n5] if x is not None])
 
             # Fetch parent subject name
             cursor.execute("""
                 SELECT name
                 FROM subjects
-                WHERE id = ?
-            """, (subject_id,))
+                WHERE subject_code = ? and language = ?
+            """, (subject_id, gus_language))
             
             result = cursor.fetchone()
             if not result:
